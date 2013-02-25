@@ -28,6 +28,10 @@ class BugzillaAgent(object):
     def get_bug_list(self, params={}):
         url = url = urljoin(self.API_ROOT, 'bug/?%s' % (self.qs(**params)))
         return BugSearch.get(url).bugs
+        
+    def get_component(self, params={}):
+        url = url = urljoin(self.API_ROOT, 'configuration/?%s' % (self.qs(**params)))
+        return ConfigurationSearch.get(url).component
 
     def qs(self, **params):
         if self.username and self.password:

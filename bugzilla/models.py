@@ -40,7 +40,7 @@ class Bug(RemoteObject):
     attachments = fields.List(fields.Object('Attachment'))
     comments = fields.List(fields.Object('Comment'))
     history = fields.List(fields.Object('Changeset'))
-    keywords = fields.List(fields.Object('Keyword'))
+    #keywords = fields.List(fields.Object('Keyword'))
     status = fields.Field()
     resolution = fields.Field()
 
@@ -48,9 +48,18 @@ class Bug(RemoteObject):
     cf_blocking_20 = fields.Field()
     cf_blocking_fennec = fields.Field()
     cf_crash_signature = fields.Field()
+    cf_status_firefox_esr17 = fields.Field()
+    cf_status_firefox19 = fields.Field()
+    cf_status_firefox20 = fields.Field()
+    cf_status_firefox21 = fields.Field()
+    cf_tracking_firefox_esr17 = fields.Field()
+    cf_tracking_firefox19 = fields.Field()
+    cf_tracking_firefox20 = fields.Field()
+    cf_tracking_firefox21 = fields.Field()
 
     creation_time = Datetime(DATETIME_FORMAT_WITH_SECONDS)
     flags = fields.List(fields.Object('Flag'))
+    groups = fields.List(fields.Object('Group'))
     blocks = fields.List(fields.Field())
     depends_on = fields.List(fields.Field())
     url = fields.Field()
@@ -83,7 +92,6 @@ class Bug(RemoteObject):
     actual_time = fields.Field()
     deadline = Datetime(DATETIME_FORMAT_WITH_SECONDS)
     estimated_time = fields.Field()
-    # groups = fields.Field() # unimplemented
     percentage_complete = fields.Field()
     remaining_time = fields.Field()
     work_time = fields.Field()
@@ -96,6 +104,26 @@ class Bug(RemoteObject):
 
     def __hash__(self):
         return self.id
+    
+    def jsonify(self):
+        groups = []
+        for group in self.groups:
+            groups.append(group.jsonify())
+        return {
+            'id': self.id,
+            'summary': self.summary,
+            'status': self.status,
+            'resolution': self.resolution,
+            'severity': self.severity,
+            'priority': self.priority,
+            'cf_status_firefox19': self.cf_status_firefox19,
+            'cf_status_firefox20': self.cf_status_firefox20,
+            'cf_tracking_firefox_esr17': self.cf_tracking_firefox_esr17,
+            'cf_tracking_firefox19': self.cf_tracking_firefox19,
+            'cf_tracking_firefox20': self.cf_tracking_firefox20,
+            'keywords': self.keywords,
+            'groups': groups
+        }
 
 
 class User(RemoteObject):
@@ -114,8 +142,7 @@ class User(RemoteObject):
         if not self or not self.name:
             return 0
         return self.name.__hash__()
-
-
+        
 class Attachment(RemoteObject):
 
     # Attachment data.
@@ -194,6 +221,24 @@ class Changeset(RemoteObject):
             self.changer, self.change_time.strftime(DATETIME_FORMAT))
 
 
+class Group(RemoteObject):
+    
+    id = fields.Field()
+    name = fields.Field()
+    
+    def __repr__(self):
+        return '<Group %s>' % self.name
+    
+    def __str__(self):
+        return self.name
+        
+    def jsonify(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
+
 class Flag(RemoteObject):
 
     id = fields.Field()
@@ -212,7 +257,6 @@ class Flag(RemoteObject):
     def __hash__(self):
         return self.id
 
-
 class Keyword(RemoteObject):
 
     name = fields.Field()
@@ -228,7 +272,20 @@ class Keyword(RemoteObject):
             return 0
         return self.name.__hash__()
 
-
 class BugSearch(RemoteObject):
     
     bugs = fields.List(fields.Object('Bug'))
+    
+class Component(RemoteObject):
+    
+    id = fields.Field()
+    description = fields.Field()
+    flag_type = fields.List(fields.Field())
+    
+    def __repr__(self):
+        return '<Component "%s": "%s">' % (self.id, self.description)
+        
+class ConfigurationSearch(RemoteObject):
+    #configuration = fields.Object('Configuration')
+    #classification = fields.List(fields.Object('Classification'))
+    component = fields.List(fields.Object('Component'))
