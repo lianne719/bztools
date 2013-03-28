@@ -104,27 +104,6 @@ class Bug(RemoteObject):
 
     def __hash__(self):
         return self.id
-    
-    def jsonify(self):
-        groups = []
-        for group in self.groups:
-            groups.append(group.jsonify())
-        return {
-            'id': self.id,
-            'summary': self.summary,
-            'status': self.status,
-            'resolution': self.resolution,
-            'severity': self.severity,
-            'priority': self.priority,
-            'cf_status_firefox19': self.cf_status_firefox19,
-            'cf_status_firefox20': self.cf_status_firefox20,
-            'cf_tracking_firefox_esr17': self.cf_tracking_firefox_esr17,
-            'cf_tracking_firefox19': self.cf_tracking_firefox19,
-            'cf_tracking_firefox20': self.cf_tracking_firefox20,
-            'keywords': self.keywords,
-            'groups': groups
-        }
-
 
 class User(RemoteObject):
 
@@ -232,13 +211,6 @@ class Group(RemoteObject):
     def __str__(self):
         return self.name
         
-    def jsonify(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-        }
-
-
 class Flag(RemoteObject):
 
     id = fields.Field()
@@ -275,17 +247,3 @@ class Keyword(RemoteObject):
 class BugSearch(RemoteObject):
     
     bugs = fields.List(fields.Object('Bug'))
-    
-class Component(RemoteObject):
-    
-    id = fields.Field()
-    description = fields.Field()
-    flag_type = fields.List(fields.Field())
-    
-    def __repr__(self):
-        return '<Component "%s": "%s">' % (self.id, self.description)
-        
-class ConfigurationSearch(RemoteObject):
-    #configuration = fields.Object('Configuration')
-    #classification = fields.List(fields.Object('Classification'))
-    component = fields.List(fields.Object('Component'))
