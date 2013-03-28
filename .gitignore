@@ -1,3 +1,7 @@
+*.log
 *.pyc
 .DS_Store
+build/
+bztools.egg-info/
+dist/
 scripts/configs/config.json
